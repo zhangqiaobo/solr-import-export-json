@@ -54,6 +54,15 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
 					<showDeprecation>true</showDeprecation>
@@ -106,6 +115,24 @@
 	</build>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20211205</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.clickhouse/clickhouse-jdbc -->
+		<dependency>
+			<groupId>com.clickhouse</groupId>
+			<artifactId>clickhouse-jdbc</artifactId>
+			<version>0.4.4</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.clickhouse/clickhouse-client -->
+		<dependency>
+			<groupId>com.clickhouse</groupId>
+			<artifactId>clickhouse-client</artifactId>
+			<version>0.4.4</version>
+		</dependency>
+
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
@@ -162,5 +189,15 @@
          <version>${solr.version}</version>
          <scope>test</scope>
       </dependency>
+		<dependency>
+			<groupId>ru.yandex.clickhouse</groupId>
+			<artifactId>clickhouse-jdbc</artifactId>
+			<version>0.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>5.3.13</version>
+		</dependency>
 	</dependencies>
 </project>

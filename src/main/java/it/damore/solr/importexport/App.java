@@ -11,6 +11,10 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -31,7 +35,6 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.request.QueryRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CursorMarkParams;
@@ -48,6 +51,7 @@ import it.damore.solr.importexport.config.CommandLineConfig;
 import it.damore.solr.importexport.config.ConfigFactory;
 import it.damore.solr.importexport.config.SolrField;
 import it.damore.solr.importexport.config.SolrField.MatchType;
+import org.springframework.util.StopWatch;
 
 //@formatter:off
 /*
@@ -383,31 +387,39 @@ public class App {
                     }
 
                     SolrDocumentList results = rsp.getResults();
-                    for (SolrDocument d : results) {
-                        skipFieldsEquals.forEach(f -> d.removeFields(f.getText()));
-                        if (skipFieldsStartWith.size() > 0 || skipFieldsEndWith.size() > 0) {
-                            Map<String, Object> collect = d.entrySet()
-                                                           .stream()
-                                                           .filter(e -> !skipFieldsStartWith.stream()
-                                                                                            .filter(f -> e.getKey()
-                                                                                                          .startsWith(f
-                                                                                                                  .getText()))
-                                                                                            .findFirst()
-                                                                                            .isPresent())
-                                                           .filter(e -> !skipFieldsEndWith.stream()
-                                                                                          .filter(f -> e.getKey()
-                                                                                                        .endsWith(f
-                                                                                                                .getText()))
-                                                                                          .findFirst()
-                                                                                          .isPresent())
-                                                           .collect(Collectors
-                                                                   .toMap(e -> e.getKey(), e -> e.getValue()));
-                            pw.write(objectMapper.writeValueAsString(collect));
-                        } else {
-                            pw.write(objectMapper.writeValueAsString(d));
-                        }
-                        pw.write("\n");
-                    }
+                    //for (SolrDocument d : results) {
+                    //    skipFieldsEquals.forEach(f -> d.removeFields(f.getText()));
+                    //    if (skipFieldsStartWith.size() > 0 || skipFieldsEndWith.size() > 0) {
+                    //        Map<String, Object> collect = d.entrySet()
+                    //                                       .stream()
+                    //                                       .filter(e -> !skipFieldsStartWith.stream()
+                    //                                                                        .filter(f -> e.getKey()
+                    //                                                                                      .startsWith(f
+                    //                                                                                              .getText()))
+                    //                                                                        .findFirst()
+                    //                                                                        .isPresent())
+                    //                                       .filter(e -> !skipFieldsEndWith.stream()
+                    //                                                                      .filter(f -> e.getKey()
+                    //                                                                                    .endsWith(f
+                    //                                                                                            .getText()))
+                    //                                                                      .findFirst()
+                    //                                                                      .isPresent())
+                    //                                       .collect(Collectors
+                    //                                               .toMap(e -> e.getKey(), e -> e.getValue()));
+                    //        pw.write(objectMapper.writeValueAsString(collect));
+                    //    } else {
+                    //        //写入click-house
+                    //        pw.write(objectMapper.writeValueAsString(d));
+                    //    }
+                    //    pw.write("\n");
+                    //}
+
+                    //开始写入clickhouse
+                    StopWatch stopWatch = new StopWatch("计算插入clickhouse耗时");
+                    stopWatch.start();
+                    ClickHouseWriter.insertClickHouse(results);
+                    stopWatch.stop();
+                    logger.info("耗时："+stopWatch.getTotalTimeMillis()+" ms");
                     if (!disableCursors && cursorMark.equals(nextCursorMark)) {
                         done = true;
                     } else {
@@ -424,5 +436,6 @@ public class App {
         }
 
     }
+
 
 }
