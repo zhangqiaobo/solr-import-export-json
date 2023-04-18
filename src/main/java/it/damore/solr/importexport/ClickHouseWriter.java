@@ -13,7 +13,7 @@ public class ClickHouseWriter {
     private static Logger logger = LoggerFactory.getLogger(ClickHouseWriter.class);
 
     private static final String JDBC_DRIVER = "ru.yandex.clickhouse.ClickHouseDriver";
-    private static final String DB_URL = "jdbc:clickhouse://47.98.106.152:8123/solrData";
+    private static final String DB_URL = "jdbc:clickhouse://loclhost:8123/solrData";
     private static final String USER = "default";
     private static final String PASSWORD = "";
 
